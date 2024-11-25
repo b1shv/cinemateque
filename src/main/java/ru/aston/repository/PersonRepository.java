@@ -6,11 +6,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface PersonRepository {
+    boolean personExists(long id) throws SQLException;
+
+    boolean personExists(Person person) throws SQLException;
+
     int addPerson(Person person) throws SQLException;
 
     int updatePerson(Person person) throws SQLException;
-
-    Person findPersonById(long id) throws SQLException;
 
     List<Person> findAllPersons() throws SQLException;
 

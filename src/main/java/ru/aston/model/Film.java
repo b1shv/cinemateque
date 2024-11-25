@@ -1,6 +1,7 @@
 package ru.aston.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ public class Film {
         this.name = builder.name;
         this.releaseDate = builder.releaseDate;
         this.director = builder.director;
-        this.genres = builder.genres;
+        this.genres = builder.genres == null ? new ArrayList<>() : builder.genres;
         this.description = builder.description;
     }
 

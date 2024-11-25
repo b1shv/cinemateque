@@ -10,6 +10,33 @@ import java.util.List;
 
 public class PersonRepositoryImpl implements PersonRepository {
     @Override
+    public boolean personExists(long id) throws SQLException {
+        String sql = "SELECT * FROM persons WHERE id = ?";
+
+        try (Connection connection = DataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        }
+    }
+
+    @Override
+    public boolean personExists(Person person) throws SQLException {
+        String sql = "SELECT * FROM persons WHERE name = ? AND birthdate = ?";
+
+        try (Connection connection = DataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, person.getName());
+            statement.setTimestamp(2, Timestamp.valueOf(person.getBirthdate().atStartOfDay()));
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        }
+    }
+
+    @Override
     public int addPerson(Person person) throws SQLException {
         String sql = "INSERT INTO persons (name, birthdate) VALUES (?, ?)";
 
@@ -33,20 +60,6 @@ public class PersonRepositoryImpl implements PersonRepository {
             statement.setTimestamp(2, Timestamp.valueOf(person.getBirthdate().atStartOfDay()));
             statement.setLong(3, person.getId());
             return statement.executeUpdate();
-        }
-    }
-
-    @Override
-    public Person findPersonById(long id) throws SQLException {
-        String sql = "SELECT * FROM persons WHERE id = ?";
-
-        try (Connection connection = DataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
-            return makePerson(resultSet);
         }
     }
 
