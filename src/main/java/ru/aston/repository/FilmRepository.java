@@ -2,27 +2,23 @@ package ru.aston.repository;
 
 import ru.aston.model.Film;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface FilmRepository {
-    boolean filmExists(long id) throws SQLException;
+    boolean filmExists(Film film);
 
-    boolean filmExists(Film film) throws SQLException;
+    long addFilm(Film film);
 
-    long addFilm(Film film) throws SQLException;
+    void updateFilm(Film film);
 
-    int updateFilm(Film film) throws SQLException;
+    Optional<Film> findFilmById(long id);
 
-    Film findFilmById(long id) throws SQLException;
+    List<Film> findAllFilms();
 
-    List<Film> findFilmsByGenre(long genreId) throws SQLException;
+    void deleteFilm(long id);
 
-    List<Film> findFilmsByDirector(long directorId) throws SQLException;
+    void addFilmGenres(Film film);
 
-    int deleteFilm(long id) throws SQLException;
-
-    void addFilmGenres(Film film) throws SQLException;
-
-    void deleteFilmGenres(long filmId) throws SQLException;
+    void deleteFilmGenres(long filmId);
 }

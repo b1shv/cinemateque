@@ -13,6 +13,15 @@ public class Film {
     private List<Genre> genres;
     private String description;
 
+    public Film(long id, String name, LocalDate releaseDate, Person director, List<Genre> genres, String description) {
+        this.id = id;
+        this.name = name;
+        this.releaseDate = releaseDate;
+        this.director = director;
+        this.genres = genres;
+        this.description = description;
+    }
+
     private Film(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;

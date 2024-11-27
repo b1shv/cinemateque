@@ -1,42 +1,38 @@
 package ru.aston.servlet;
 
-import ru.aston.dto.GenreRequest;
-import ru.aston.model.Genre;
+import ru.aston.dto.FilmRequest;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class GenreServlet extends AbstractServlet {
+public class FilmServlet extends AbstractServlet {
     @Override
     protected void add(String requestBody) {
-        genreService.addGenre(genreMapper.toGenre(gson.fromJson(requestBody, GenreRequest.class)));
+        filmService.addFilm(filmMapper.toFilm(gson.fromJson(requestBody, FilmRequest.class)));
     }
 
     @Override
     protected void update(long id, String requestBody) {
-        Genre genre = genreMapper.toGenre(gson.fromJson(requestBody, GenreRequest.class), id);
-        genreService.updateGenre(genre);
+        filmService.updateFilm(filmMapper.toFilm(gson.fromJson(requestBody, FilmRequest.class), id));
     }
 
     @Override
     protected void findAll(HttpServletResponse resp) throws IOException {
         try (PrintWriter writer = resp.getWriter()) {
-            writer.write(gson.toJson(genreService.findAllGenres().stream()
-                    .map(genreMapper::toShortDto)
-                    .toList()));
+            writer.write(gson.toJson(filmService.findAllFilms().stream().map(filmMapper::toFilmShortDto).toList()));
         }
     }
 
     @Override
     protected void findById(long id, HttpServletResponse resp) throws IOException {
         try (PrintWriter writer = resp.getWriter()) {
-            writer.write(gson.toJson(genreMapper.toGenreFullDto(genreService.findGenreById(id))));
+            writer.write(gson.toJson(filmMapper.toFilmFullDto(filmService.findFilmById(id))));
         }
     }
 
     @Override
     protected void delete(long id) {
-        genreService.deleteGenre(id);
+        filmService.deleteFilm(id);
     }
 }

@@ -3,5 +3,50 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+
+  <servlet>
+    <servlet-name>GenreServlet</servlet-name>
+    <servlet-class>ru.aston.servlet.GenreServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>GenreServlet</servlet-name>
+    <url-pattern>/genres</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>GenreServlet</servlet-name>
+    <url-pattern>/genres/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>PersonServlet</servlet-name>
+    <servlet-class>ru.aston.servlet.PersonServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>PersonServlet</servlet-name>
+    <url-pattern>/persons</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>PersonServlet</servlet-name>
+    <url-pattern>/persons/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>FilmServlet</servlet-name>
+    <servlet-class>ru.aston.servlet.FilmServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FilmServlet</servlet-name>
+    <url-pattern>/films</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>FilmServlet</servlet-name>
+    <url-pattern>/films/*</url-pattern>
+  </servlet-mapping>
+
 </web-app>

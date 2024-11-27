@@ -1,29 +1,29 @@
 package ru.aston.servlet;
 
-import ru.aston.dto.GenreRequest;
-import ru.aston.model.Genre;
+import ru.aston.dto.PersonFullDto;
+import ru.aston.dto.PersonRequest;
+import ru.aston.model.Person;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class GenreServlet extends AbstractServlet {
+public class PersonServlet extends AbstractServlet {
     @Override
     protected void add(String requestBody) {
-        genreService.addGenre(genreMapper.toGenre(gson.fromJson(requestBody, GenreRequest.class)));
+        personService.addPerson(personMapper.toPerson(gson.fromJson(requestBody, PersonRequest.class)));
     }
 
     @Override
     protected void update(long id, String requestBody) {
-        Genre genre = genreMapper.toGenre(gson.fromJson(requestBody, GenreRequest.class), id);
-        genreService.updateGenre(genre);
+        personService.updatePerson(personMapper.toPerson(gson.fromJson(requestBody, PersonRequest.class), id));
     }
 
     @Override
     protected void findAll(HttpServletResponse resp) throws IOException {
         try (PrintWriter writer = resp.getWriter()) {
-            writer.write(gson.toJson(genreService.findAllGenres().stream()
-                    .map(genreMapper::toShortDto)
+            writer.write(gson.toJson(personService.findAllPersons().stream()
+                    .map(personMapper::toPersonShortDto)
                     .toList()));
         }
     }
@@ -31,12 +31,12 @@ public class GenreServlet extends AbstractServlet {
     @Override
     protected void findById(long id, HttpServletResponse resp) throws IOException {
         try (PrintWriter writer = resp.getWriter()) {
-            writer.write(gson.toJson(genreMapper.toGenreFullDto(genreService.findGenreById(id))));
+            writer.write(gson.toJson(personMapper.toPersonFullDto(personService.findPersonById(id)), PersonFullDto.class));
         }
     }
 
     @Override
     protected void delete(long id) {
-        genreService.deleteGenre(id);
+        personService.deletePerson(id);
     }
 }

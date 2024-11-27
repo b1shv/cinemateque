@@ -8,6 +8,12 @@ public class Person {
     private String name;
     private LocalDate birthdate;
 
+    public Person(long id, String name, LocalDate birthdate) {
+        this.id = id;
+        this.name = name;
+        this.birthdate = birthdate;
+    }
+
     private Person(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;

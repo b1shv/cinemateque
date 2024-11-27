@@ -8,8 +8,8 @@ import ru.aston.repository.FilmRepository;
 import ru.aston.repository.GenreRepository;
 import ru.aston.repository.PersonRepository;
 import ru.aston.service.FilmService;
+import ru.aston.service.PersonService;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,20 +20,22 @@ public class FilmServiceImpl implements FilmService {
     private final GenreRepository genreRepository;
     private final PersonRepository personRepository;
 
-    public FilmServiceImpl(FilmRepository filmRepository, GenreRepository genreRepository, PersonRepository personRepository) {
+    public FilmServiceImpl(FilmRepository filmRepository,
+                           GenreRepository genreRepository,
+                           PersonRepository personRepository) {
         this.filmRepository = filmRepository;
         this.genreRepository = genreRepository;
         this.personRepository = personRepository;
     }
 
     @Override
-    public void addFilm(Film film) throws SQLException {
+    public void addFilm(Film film) {
         if (filmRepository.filmExists(film)) {
-            throw new ConsistencyException("Такой фильм уже есть в Синематеке");
+            throw new ConsistencyException(CONSISTENCY_MESSAGE);
         }
-        if (!personRepository.personExists(film.getDirector().getId())) {
-            throw new NotFoundException(String.format("Режиссёра с id = %d нет в Синематеке", film.getDirector().getId()));
-        }
+        personRepository.findPersonById(film.getDirector().getId())
+                .orElseThrow(() -> new NotFoundException(String.format(PersonService.NOT_FOUND_MESSAGE, film.getDirector().getId())));
+
         Set<Long> missingGenres = genreRepository.genresExists(
                 film.getGenres().stream()
                         .map(Genre::getId)
@@ -47,13 +49,12 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public void updateFilm(Film film) throws SQLException {
-        if (!filmRepository.filmExists(film.getId())) {
-            throw new NotFoundException(String.format("Фильма с id = %d нет в Синематеке", film.getId()));
-        }
-        if (!personRepository.personExists(film.getDirector().getId())) {
-            throw new NotFoundException(String.format("Режиссёра с id = %d нет в Синематеке", film.getDirector().getId()));
-        }
+    public void updateFilm(Film film) {
+        filmRepository.findFilmById(film.getId())
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, film.getId())));
+        personRepository.findPersonById(film.getDirector().getId())
+                .orElseThrow(() -> new NotFoundException(String.format(PersonService.NOT_FOUND_MESSAGE, film.getDirector().getId())));
+
         Set<Long> missingGenres = genreRepository.genresExists(
                 film.getGenres().stream()
                         .map(Genre::getId)
@@ -68,40 +69,22 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Film findFilmById(long id) throws SQLException {
-        if (!filmRepository.filmExists(id)) {
-            throw new NotFoundException(String.format("Фильма с id = %d нет в Синематеке", id));
-        }
-        Film film = filmRepository.findFilmById(id);
+    public Film findFilmById(long id) {
+        Film film = filmRepository.findFilmById(id)
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
         film.setGenres(genreRepository.findGenresByFilmId(id));
         return film;
     }
 
     @Override
-    public List<Film> findFilmsByGenre(long genreId) throws SQLException {
-        if (!genreRepository.genreExists(genreId)) {
-            throw new NotFoundException(String.format("Жанра с id = %d нет в Синематеке", genreId));
-        }
-        List<Film> films = filmRepository.findFilmsByGenre(genreId);
-        addGenres(films);
-        return films;
+    public List<Film> findAllFilms() {
+        return addGenres(filmRepository.findAllFilms());
     }
 
     @Override
-    public List<Film> findFilmsByDirector(long directorId) throws SQLException {
-        if (!personRepository.personExists(directorId)) {
-            throw new NotFoundException(String.format("Режиссёра с id = %d нет в Синематеке", directorId));
-        }
-        List<Film> films = filmRepository.findFilmsByDirector(directorId);
-        addGenres(films);
-        return films;
-    }
-
-    @Override
-    public void deleteFilm(long id) throws SQLException {
-        if (!filmRepository.filmExists(id)) {
-            throw new NotFoundException(String.format("Фильма с id = %d нет в Синематеке", id));
-        }
+    public void deleteFilm(long id) {
+        filmRepository.findFilmById(id)
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
         filmRepository.deleteFilm(id);
     }
 
@@ -119,11 +102,12 @@ public class FilmServiceImpl implements FilmService {
         return builder.toString();
     }
 
-    private void addGenres(List<Film> films) throws SQLException {
+    private List<Film> addGenres(List<Film> films) {
         Map<Long, List<Genre>> genres = genreRepository.findGenresByFilms(films);
 
         for (Film film : films) {
             film.setGenres(genres.get(film.getId()));
         }
+        return films;
     }
 }

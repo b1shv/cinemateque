@@ -3,27 +3,27 @@ package ru.aston.repository;
 import ru.aston.model.Film;
 import ru.aston.model.Genre;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public interface GenreRepository {
-    boolean genreExists(String genreName) throws SQLException;
+    boolean genreExists(String genreName);
 
-    boolean genreExists(long id) throws SQLException;
+    Set<Long> genresExists(Set<Long> genreIds);
 
-    Set<Long> genresExists(Set<Long> genreIds) throws SQLException;
+    void addGenre(Genre genre);
 
-    int addGenre(Genre genre) throws SQLException;
+    void updateGenre(Genre genre);
 
-    int updateGenre(Genre genre) throws SQLException;
+    Optional<Genre> findGenreById(long id);
 
-    List<Genre> findAllGenres() throws SQLException;
+    List<Genre> findAllGenres();
 
-    List<Genre> findGenresByFilmId(long filmId) throws SQLException;
+    List<Genre> findGenresByFilmId(long filmId);
 
-    Map<Long, List<Genre>> findGenresByFilms(List<Film> films) throws SQLException;
+    Map<Long, List<Genre>> findGenresByFilms(List<Film> films);
 
-    int deleteGenre(long id) throws SQLException;
+    void deleteGenre(long id);
 }

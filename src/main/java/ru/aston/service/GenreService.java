@@ -2,15 +2,19 @@ package ru.aston.service;
 
 import ru.aston.model.Genre;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface GenreService {
-    void addGenre(Genre genre) throws SQLException;
+    public static final String CONSISTENCY_MESSAGE = "Такой жанр уже есть в Синематеке";
+    public static final String NOT_FOUND_MESSAGE = "Не удалось найти жанр c id = %d";
 
-    void updateGenre(Genre genre) throws SQLException;
+    void addGenre(Genre genre);
 
-    List<Genre> findAllGenres() throws SQLException;
+    void updateGenre(Genre genre);
 
-    void deleteGenre(long id) throws SQLException;
+    Genre findGenreById(long id);
+
+    List<Genre> findAllGenres();
+
+    void deleteGenre(long id);
 }

@@ -2,19 +2,19 @@ package ru.aston.service;
 
 import ru.aston.model.Film;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface FilmService {
-    void addFilm(Film film) throws SQLException;
+    String CONSISTENCY_MESSAGE = "Такой фильм уже есть в Синематеке";
+    String NOT_FOUND_MESSAGE = "Фильма с id = %d нет в Синематеке";
 
-    void updateFilm(Film film) throws SQLException;
+    void addFilm(Film film);
 
-    Film findFilmById(long id) throws SQLException;
+    void updateFilm(Film film);
 
-    List<Film> findFilmsByGenre(long genreId) throws SQLException;
+    Film findFilmById(long id);
 
-    List<Film> findFilmsByDirector(long directorId) throws SQLException;
+    List<Film> findAllFilms();
 
-    void deleteFilm(long id) throws SQLException;
+    void deleteFilm(long id);
 }

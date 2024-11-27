@@ -2,19 +2,19 @@ package ru.aston.repository;
 
 import ru.aston.model.Person;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface PersonRepository {
-    boolean personExists(long id) throws SQLException;
+    boolean personExists(Person person);
 
-    boolean personExists(Person person) throws SQLException;
+    void addPerson(Person person);
 
-    int addPerson(Person person) throws SQLException;
+    void updatePerson(Person person);
 
-    int updatePerson(Person person) throws SQLException;
+    List<Person> findAllPersons();
 
-    List<Person> findAllPersons() throws SQLException;
+    Optional<Person> findPersonById(long id);
 
-    int deletePerson(long id) throws SQLException;
+    void deletePerson(long id);
 }

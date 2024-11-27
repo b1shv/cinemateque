@@ -1,5 +1,6 @@
 package ru.aston.repository.impl;
 
+import ru.aston.exception.DataSourceException;
 import ru.aston.model.Film;
 import ru.aston.model.Genre;
 import ru.aston.repository.DataSource;
@@ -10,7 +11,7 @@ import java.util.*;
 
 public class GenreRepositoryImpl implements GenreRepository {
     @Override
-    public boolean genreExists(String genreName) throws SQLException {
+    public boolean genreExists(String genreName) {
         String sql = "SELECT * FROM genres WHERE name = ?";
 
         try (Connection connection = DataSource.getConnection();
@@ -19,24 +20,13 @@ public class GenreRepositoryImpl implements GenreRepository {
             statement.setString(1, genreName);
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
     }
 
     @Override
-    public boolean genreExists(long id) throws SQLException {
-        String sql = "SELECT * FROM genres WHERE id = ?";
-
-        try (Connection connection = DataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
-        }
-    }
-
-    @Override
-    public Set<Long> genresExists(Set<Long> genreIds) throws SQLException {
+    public Set<Long> genresExists(Set<Long> genreIds) {
         if (genreIds.isEmpty()) {
             return genreIds;
         }
@@ -52,11 +42,13 @@ public class GenreRepositoryImpl implements GenreRepository {
             }
             ResultSet resultSet = statement.executeQuery();
             return findMismatch(genreIds, resultSet);
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
     }
 
     @Override
-    public int addGenre(Genre genre) throws SQLException {
+    public void addGenre(Genre genre) {
         String sql = "INSERT INTO genres (name, description) VALUES (?, ?)";
 
         try (Connection connection = DataSource.getConnection();
@@ -64,12 +56,14 @@ public class GenreRepositoryImpl implements GenreRepository {
 
             statement.setString(1, genre.getName());
             statement.setString(2, genre.getDescription());
-            return statement.executeUpdate();
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
     }
 
     @Override
-    public int updateGenre(Genre genre) throws SQLException {
+    public void updateGenre(Genre genre) {
         String sql = "UPDATE genres SET name = ?, description = ? WHERE id = ?";
 
         try (Connection connection = DataSource.getConnection();
@@ -78,12 +72,29 @@ public class GenreRepositoryImpl implements GenreRepository {
             statement.setString(1, genre.getName());
             statement.setString(2, genre.getDescription());
             statement.setLong(3, genre.getId());
-            return statement.executeUpdate();
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
     }
 
     @Override
-    public List<Genre> findAllGenres() throws SQLException {
+    public Optional<Genre> findGenreById(long id) {
+        String sql = "SELECT * FROM genres WHERE id = ?";
+
+        try (Connection connection = DataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            return (resultSet.next()) ? Optional.of(makeGenre(resultSet)) : Optional.empty();
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Genre> findAllGenres() {
         List<Genre> genres = new ArrayList<>();
         String sql = "SELECT * FROM genres";
 
@@ -94,12 +105,14 @@ public class GenreRepositoryImpl implements GenreRepository {
             while (resultSet.next()) {
                 genres.add(makeGenre(resultSet));
             }
+            return genres;
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
-        return genres;
     }
 
     @Override
-    public List<Genre> findGenresByFilmId(long filmId) throws SQLException {
+    public List<Genre> findGenresByFilmId(long filmId) {
         List<Genre> genres = new ArrayList<>();
         String sql = "SELECT g.* " +
                 "FROM genres AS g " +
@@ -114,12 +127,14 @@ public class GenreRepositoryImpl implements GenreRepository {
             while (resultSet.next()) {
                 genres.add(makeGenre(resultSet));
             }
+            return genres;
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
-        return genres;
     }
 
     @Override
-    public Map<Long, List<Genre>> findGenresByFilms(List<Film> films) throws SQLException {
+    public Map<Long, List<Genre>> findGenresByFilms(List<Film> films) {
         String sql = queryWithMultipleParams(
                 "SELECT fg.film_id, g.id, g.name, g.description " +
                         "FROM films_genres AS fg " +
@@ -143,20 +158,23 @@ public class GenreRepositoryImpl implements GenreRepository {
                 }
                 genres.get(filmId).add(makeGenre(resultSet));
             }
-
             return genres;
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
     }
 
     @Override
-    public int deleteGenre(long id) throws SQLException {
+    public void deleteGenre(long id) {
         String sql = "DELETE FROM genres WHERE id = ?";
 
         try (Connection connection = DataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setLong(1, id);
-            return statement.executeUpdate();
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataSourceException(e.getMessage());
         }
     }
 

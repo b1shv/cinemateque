@@ -7,6 +7,12 @@ public class Genre {
     private String name;
     private String description;
 
+    public Genre(long id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
     private Genre(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
