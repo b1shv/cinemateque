@@ -17,6 +17,8 @@ import ru.aston.service.PersonService;
 import ru.aston.service.impl.FilmServiceImpl;
 import ru.aston.service.impl.GenreServiceImpl;
 import ru.aston.service.impl.PersonServiceImpl;
+import ru.aston.servlet.util.ExceptionHandler;
+import ru.aston.servlet.util.ExceptionHandlerImpl;
 import ru.aston.servlet.util.LocalDateAdapter;
 
 import javax.servlet.ServletContext;
@@ -33,6 +35,7 @@ public class Listener implements ServletContextListener {
     private FilmMapper filmMapper;
     private PersonMapper personMapper;
     private GenreMapper genreMapper;
+    private ExceptionHandler exceptionHandler;
     private Gson gson;
 
     @Override
@@ -52,6 +55,7 @@ public class Listener implements ServletContextListener {
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter().nullSafe())
                 .create();
+        exceptionHandler = new ExceptionHandlerImpl(gson);
 
         servletContext.setAttribute("filmService", filmService);
         servletContext.setAttribute("genreService", genreService);
@@ -59,6 +63,7 @@ public class Listener implements ServletContextListener {
         servletContext.setAttribute("filmMapper", filmMapper);
         servletContext.setAttribute("personMapper", personMapper);
         servletContext.setAttribute("genreMapper", genreMapper);
+        servletContext.setAttribute("exceptionHandler", exceptionHandler);
         servletContext.setAttribute("gson", gson);
     }
 }

@@ -1,12 +1,33 @@
 package ru.aston.servlet;
 
 import ru.aston.dto.FilmRequest;
+import ru.aston.exception.ServletInitializationException;
+import ru.aston.mapper.FilmMapper;
+import ru.aston.service.FilmService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 public class FilmServlet extends AbstractServlet {
+    private FilmService filmService;
+    private FilmMapper filmMapper;
+
+    @Override
+    public void init() {
+        super.init();
+
+        final Object filmServiceFromContext = getServletContext().getAttribute("filmService");
+        final Object filmMapperFromContext = getServletContext().getAttribute("filmMapper");
+
+        try {
+            filmService = (FilmService) filmServiceFromContext;
+            filmMapper = (FilmMapper) filmMapperFromContext;
+        } catch (ClassCastException e) {
+            throw new ServletInitializationException("Невозможно инициализировать сервлет: " + e.getMessage());
+        }
+    }
+
     @Override
     protected void add(String requestBody) {
         filmService.addFilm(filmMapper.toFilm(gson.fromJson(requestBody, FilmRequest.class)));
