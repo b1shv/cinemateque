@@ -43,7 +43,7 @@ public class PersonServlet extends AbstractServlet {
     protected void findAll(HttpServletResponse resp) throws IOException {
         try (PrintWriter writer = resp.getWriter()) {
             writer.write(gson.toJson(personService.findAllPersons().stream()
-                    .map(personMapper::toPersonShortDto)
+                    .map(personMapper::toPersonFullDto)
                     .toList()));
         }
     }
