@@ -44,7 +44,7 @@ public class GenreServlet extends AbstractServlet {
     protected void findAll(HttpServletResponse resp) throws IOException {
         try (PrintWriter writer = resp.getWriter()) {
             writer.write(gson.toJson(genreService.findAllGenres().stream()
-                    .map(genreMapper::toShortDto)
+                    .map(genreMapper::toGenreFullDto)
                     .toList()));
         }
     }
